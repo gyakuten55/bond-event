@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { APPLICATION_STATUS } from '@/lib/constants'
 
 export async function GET(
   request: Request,
@@ -7,7 +8,6 @@ export async function GET(
 ) {
   const supabase = createClient()
 
-  // Check admin role
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -23,43 +23,57 @@ export async function GET(
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // Fetch applications
-  const { data: applications } = await supabase
+  const { data: event, error: eventError } = await supabase
+    .from('events')
+    .select('id, title, event_date')
+    .eq('id', params.id)
+    .single()
+
+  if (eventError || !event) {
+    return NextResponse.json({ error: 'Event not found' }, { status: 404 })
+  }
+
+  const { data: applications, error: appsError } = await supabase
     .from('event_applications')
     .select('*, users(name, email, company)')
     .eq('event_id', params.id)
     .order('created_at', { ascending: true })
 
-  if (!applications) {
-    return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  if (appsError) {
+    return NextResponse.json({ error: 'Failed to fetch applications' }, { status: 500 })
   }
 
-  // Build CSV
+  const escapeCsv = (value: unknown) => {
+    const str = value == null ? '' : String(value)
+    return `"${str.replace(/"/g, '""')}"`
+  }
+
   const headers = ['名前', 'メール', '電話番号', '会社', '区分', 'ステータス', '人数', 'メッセージ', '申込日']
-  const rows = applications.map((app: any) => [
+  const rows = (applications ?? []).map((app: any) => [
     app.users?.name || app.guest_name || '',
     app.users?.email || app.guest_email || '',
     app.guest_phone || '',
     app.users?.company || app.guest_company || '',
     app.user_id ? '会員' : 'ゲスト',
-    app.status,
+    APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.label || app.status,
     app.number_of_guests,
-    (app.message || '').replace(/"/g, '""'),
+    app.message || '',
     app.created_at,
   ])
 
   const csv = [
-    headers.join(','),
-    ...rows.map(row => row.map((cell: any) => `"${cell}"`).join(',')),
-  ].join('\n')
+    headers.map(escapeCsv).join(','),
+    ...rows.map((row) => row.map(escapeCsv).join(',')),
+  ].join('\r\n')
 
-  // Add BOM for Excel Japanese support
-  const bom = '\uFEFF'
+  const bom = '﻿'
+  const safeTitle = event.title.replace(/[^a-zA-Z0-9-_]/g, '_').slice(0, 30) || 'event'
+  const filename = `applicants-${event.event_date}-${safeTitle}.csv`
 
   return new NextResponse(bom + csv, {
     headers: {
       'Content-Type': 'text/csv; charset=utf-8',
-      'Content-Disposition': `attachment; filename="applicants-${params.id}.csv"`,
+      'Content-Disposition': `attachment; filename="${filename}"`,
     },
   })
 }

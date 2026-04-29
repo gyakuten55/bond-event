@@ -1,13 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
+import { assertSupabaseConfigured, isSupabaseConfigured } from './config'
 
-function isSupabaseConfigured() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  return url && url.startsWith('http') && !url.includes('your_supabase')
-}
-
-// Mock client that returns empty data when Supabase is not configured
 function createMockClient() {
   const mockQuery = () => ({
     select: () => mockQuery(),
@@ -38,6 +33,7 @@ function createMockClient() {
 }
 
 export function createClient() {
+  assertSupabaseConfigured()
   if (!isSupabaseConfigured()) {
     return createMockClient()
   }

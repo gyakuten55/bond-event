@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, Megaphone, AlertCircle } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
+import { APPLICATION_STATUS } from '@/lib/constants'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
@@ -82,8 +83,8 @@ export default async function DashboardPage() {
                       {app.events?.event_date ? formatDate(app.events.event_date) : ''}
                     </p>
                   </div>
-                  <Badge variant={app.status === 'confirmed' ? 'success' : app.status === 'cancelled' ? 'danger' : 'warning'}>
-                    {app.status === 'pending' ? '確認中' : app.status === 'confirmed' ? '確定' : app.status === 'attended' ? '参加済' : 'キャンセル'}
+                  <Badge variant={APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.variant || 'default'}>
+                    {APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.label || app.status}
                   </Badge>
                 </div>
               ))}

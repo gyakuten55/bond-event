@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate, formatCurrency } from '@/lib/utils'
-import { VENUES } from '@/lib/constants'
+import { APPLICATION_STATUS, VENUES } from '@/lib/constants'
 import { Download } from 'lucide-react'
 
 export default async function AdminEventDetailPage({ params }: { params: { id: string } }) {
@@ -18,13 +18,6 @@ export default async function AdminEventDetailPage({ params }: { params: { id: s
     .select('*, users(name, email, company)')
     .eq('event_id', params.id)
     .order('created_at', { ascending: false })
-
-  const statusLabel: Record<string, string> = {
-    pending: '確認中',
-    confirmed: '確定',
-    cancelled: 'キャンセル',
-    attended: '参加済',
-  }
 
   return (
     <div className="space-y-6">
@@ -96,8 +89,8 @@ export default async function AdminEventDetailPage({ params }: { params: { id: s
                     </Badge>
                   </td>
                   <td className="py-3 px-2">
-                    <Badge variant={app.status === 'confirmed' ? 'success' : app.status === 'cancelled' ? 'danger' : 'warning'}>
-                      {statusLabel[app.status] || app.status}
+                    <Badge variant={APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.variant || 'default'}>
+                      {APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.label || app.status}
                     </Badge>
                   </td>
                   <td className="py-3 px-2 text-text-muted">{formatDate(app.created_at)}</td>

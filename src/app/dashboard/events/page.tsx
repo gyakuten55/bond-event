@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { EmptyState } from '@/components/shared/empty-state'
 import { formatDate } from '@/lib/utils'
-import { VENUES } from '@/lib/constants'
+import { APPLICATION_STATUS, VENUES } from '@/lib/constants'
 import Link from 'next/link'
 
 export default async function DashboardEventsPage() {
@@ -16,20 +16,6 @@ export default async function DashboardEventsPage() {
     .select('*, events(*)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
-
-  const appStatusLabel: Record<string, string> = {
-    pending: '確認中',
-    confirmed: '参加確定',
-    cancelled: 'キャンセル',
-    attended: '参加済み',
-  }
-
-  const appStatusVariant: Record<string, 'warning' | 'success' | 'danger' | 'info'> = {
-    pending: 'warning',
-    confirmed: 'success',
-    cancelled: 'danger',
-    attended: 'info',
-  }
 
   return (
     <div className="space-y-6">
@@ -47,8 +33,8 @@ export default async function DashboardEventsPage() {
                         {VENUES[app.events.venue_type as keyof typeof VENUES]?.label}
                       </Badge>
                     )}
-                    <Badge variant={appStatusVariant[app.status] || 'default'}>
-                      {appStatusLabel[app.status] || app.status}
+                    <Badge variant={APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.variant || 'default'}>
+                      {APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.label || app.status}
                     </Badge>
                   </div>
                   <Link href={`/events/${app.event_id}`} className="font-bold hover:text-primary">

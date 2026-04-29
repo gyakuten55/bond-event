@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatDate, formatCurrency } from '@/lib/utils'
+import { APPLICATION_STATUS } from '@/lib/constants'
 import { Users, Calendar, Heart, TrendingUp, Clock, Mail } from 'lucide-react'
 import Link from 'next/link'
 
@@ -122,8 +123,8 @@ export default async function AdminDashboardPage() {
                     </p>
                     <p className="text-xs text-text-muted">{app.events?.title}</p>
                   </div>
-                  <Badge variant={app.status === 'pending' ? 'warning' : 'success'}>
-                    {app.status === 'pending' ? '確認中' : '確定'}
+                  <Badge variant={APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.variant || 'default'}>
+                    {APPLICATION_STATUS[app.status as keyof typeof APPLICATION_STATUS]?.label || app.status}
                   </Badge>
                 </div>
               ))}

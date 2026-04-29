@@ -40,3 +40,35 @@ export const NAV_ITEMS = [
   { href: '/news', label: 'News' },
   { href: '/contact', label: 'Contact' },
 ] as const
+
+type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info'
+
+export const APPLICATION_STATUS: Record<
+  'pending' | 'confirmed' | 'cancelled' | 'attended',
+  { label: string; variant: BadgeVariant }
+> = {
+  pending: { label: '受付中', variant: 'warning' },
+  confirmed: { label: '参加確定', variant: 'success' },
+  cancelled: { label: 'キャンセル', variant: 'danger' },
+  attended: { label: '参加済み', variant: 'info' },
+}
+
+export const EVENT_STATUS: Record<
+  'draft' | 'published' | 'cancelled' | 'completed',
+  { label: string; variant: BadgeVariant }
+> = {
+  draft: { label: '下書き', variant: 'default' },
+  published: { label: '公開中', variant: 'success' },
+  cancelled: { label: '中止', variant: 'danger' },
+  completed: { label: '終了', variant: 'warning' },
+}
+
+export const ANNOUNCEMENT_STATUS: Record<
+  'draft' | 'pending' | 'approved' | 'rejected',
+  { label: string; variant: BadgeVariant }
+> = {
+  draft: { label: '下書き', variant: 'default' },
+  pending: { label: '審査中', variant: 'warning' },
+  approved: { label: '承認', variant: 'success' },
+  rejected: { label: '却下', variant: 'danger' },
+}

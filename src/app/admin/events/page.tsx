@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/lib/utils'
-import { VENUES } from '@/lib/constants'
+import { EVENT_STATUS, VENUES } from '@/lib/constants'
 import { Plus } from 'lucide-react'
 
 export default async function AdminEventsPage() {
@@ -13,13 +13,6 @@ export default async function AdminEventsPage() {
     .from('events')
     .select('*')
     .order('event_date', { ascending: false })
-
-  const statusConfig: Record<string, { label: string; variant: 'default' | 'success' | 'warning' | 'danger' }> = {
-    draft: { label: '下書き', variant: 'default' },
-    published: { label: '公開中', variant: 'success' },
-    cancelled: { label: '中止', variant: 'danger' },
-    completed: { label: '終了', variant: 'warning' },
-  }
 
   return (
     <div className="space-y-6">
@@ -52,8 +45,8 @@ export default async function AdminEventsPage() {
                   </Badge>
                 </td>
                 <td className="py-3 px-3">
-                  <Badge variant={statusConfig[event.status]?.variant || 'default'}>
-                    {statusConfig[event.status]?.label || event.status}
+                  <Badge variant={EVENT_STATUS[event.status as keyof typeof EVENT_STATUS]?.variant || 'default'}>
+                    {EVENT_STATUS[event.status as keyof typeof EVENT_STATUS]?.label || event.status}
                   </Badge>
                 </td>
                 <td className="py-3 px-3 text-right">

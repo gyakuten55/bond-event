@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/lib/utils'
+import { ANNOUNCEMENT_STATUS } from '@/lib/constants'
 
 export default function AdminAnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<any[]>([])
@@ -31,12 +32,7 @@ export default function AdminAnnouncementsPage() {
     fetchAnnouncements()
   }
 
-  const statusConfig: Record<string, { label: string; variant: 'warning' | 'success' | 'danger' | 'default' }> = {
-    draft: { label: '下書き', variant: 'default' },
-    pending: { label: '審査中', variant: 'warning' },
-    approved: { label: '承認', variant: 'success' },
-    rejected: { label: '却下', variant: 'danger' },
-  }
+  const statusConfig = ANNOUNCEMENT_STATUS
 
   return (
     <div className="space-y-6">
