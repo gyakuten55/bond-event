@@ -3,25 +3,54 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFFFFF;
+  --foreground: #1A1A1A;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+  a {
+    @apply transition-colors duration-200;
+  }
+  ::selection {
+    @apply bg-brand/20;
+  }
+}
+
+@layer components {
+  .container-bond {
+    @apply max-w-6xl mx-auto px-5 sm:px-8;
+  }
+  .btn-primary {
+    @apply bg-text-primary text-white px-7 py-3.5 text-sm tracking-wide hover:bg-black transition-all duration-300;
+  }
+  .btn-brand {
+    @apply bg-brand text-white px-7 py-3.5 text-sm tracking-wide hover:bg-brand-dark transition-all duration-300;
+  }
+  .btn-outline {
+    @apply border border-text-primary text-text-primary px-7 py-3.5 text-sm tracking-wide hover:bg-text-primary hover:text-white transition-all duration-300;
+  }
+  .card {
+    @apply bg-surface border border-border p-6;
+  }
+  .section-padding {
+    @apply py-20 sm:py-28;
+  }
+  .badge-north {
+    @apply bg-venue-north/8 text-venue-north px-3 py-1 text-xs font-medium tracking-wide;
+  }
+  .badge-south {
+    @apply bg-venue-south/8 text-venue-south px-3 py-1 text-xs font-medium tracking-wide;
+  }
+  .divider {
+    @apply w-8 h-px bg-brand;
   }
 }
