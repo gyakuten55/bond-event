@@ -9,19 +9,21 @@ export function isSupabaseConfigured() {
   return true
 }
 
-export function assertSupabaseConfigured() {
+let warned = false
+
+export function warnIfSupabaseMissing() {
   if (isSupabaseConfigured()) return
+  if (warned) return
+  warned = true
 
   const message =
-    'Supabaseの環境変数が未設定です。NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。'
-
-  const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
-
-  if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
-    throw new Error(`[supabase] ${message}`)
-  }
+    'Supabaseの環境変数が未設定です。NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。モッククライアントで継続します。'
 
   if (typeof window === 'undefined') {
-    console.warn(`[supabase] ${message} モッククライアントで継続します。`)
+    if (process.env.NODE_ENV === 'production') {
+      console.error(`[supabase] ${message}`)
+    } else {
+      console.warn(`[supabase] ${message}`)
+    }
   }
 }

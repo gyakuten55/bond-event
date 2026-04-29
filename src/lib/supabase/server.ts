@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
-import { assertSupabaseConfigured, isSupabaseConfigured } from './config'
+import { warnIfSupabaseMissing, isSupabaseConfigured } from './config'
 
 function createMockClient() {
   const mockQuery = () => ({
@@ -33,8 +33,8 @@ function createMockClient() {
 }
 
 export function createClient() {
-  assertSupabaseConfigured()
   if (!isSupabaseConfigured()) {
+    warnIfSupabaseMissing()
     return createMockClient()
   }
 
