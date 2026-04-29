@@ -1,9 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { formatDate, formatCurrency } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { APPLICATION_STATUS } from '@/lib/constants'
-import { Users, Calendar, Heart, TrendingUp, Clock, Mail } from 'lucide-react'
+import { Users, Calendar, TrendingUp, Clock, Mail } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function AdminDashboardPage() {
@@ -15,7 +15,6 @@ export default async function AdminDashboardPage() {
     { count: pendingMembers },
     { data: nextEvent },
     { count: nextEventApplicants },
-    { data: donations },
     { data: recentApplications },
     { count: unreadContacts },
     { count: pendingAnnouncements },
@@ -24,20 +23,17 @@ export default async function AdminDashboardPage() {
     supabase.from('users').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('events').select('*').eq('status', 'published').gte('event_date', new Date().toISOString().split('T')[0]).order('event_date', { ascending: true }).limit(1).single(),
     supabase.from('event_applications').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-    supabase.from('donations').select('total_amount'),
     supabase.from('event_applications').select('*, events(title, event_date), users(name, email)').order('created_at', { ascending: false }).limit(5),
     supabase.from('contact_messages').select('*', { count: 'exact', head: true }).eq('status', 'unread'),
     supabase.from('business_announcements').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
   ])
-
-  const totalDonated = donations?.reduce((sum, d) => sum + d.total_amount, 0) || 0
 
   return (
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">管理ダッシュボード</h1>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -70,18 +66,6 @@ export default async function AdminDashboardPage() {
               次回: {formatDate(nextEvent.event_date)}
             </p>
           )}
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-              <Heart className="text-green-500" size={20} />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{formatCurrency(totalDonated)}</p>
-              <p className="text-xs text-text-muted">累計寄付金額</p>
-            </div>
-          </div>
         </Card>
 
         <Card>

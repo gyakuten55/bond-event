@@ -3,14 +3,11 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Card } from '@/components/ui/card'
-import { formatCurrency } from '@/lib/utils'
 import {
   LineChart,
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
   Cell,
   AreaChart,
   Area,
@@ -22,17 +19,13 @@ import {
   Legend,
 } from 'recharts'
 
-const COLORS = ['#4A7C59', '#3B82F6', '#F97316']
-
 export default function AnalyticsPage() {
   const [participationData, setParticipationData] = useState<any[]>([])
   const [memberGrowth, setMemberGrowth] = useState<any[]>([])
   const [venueComparison, setVenueComparison] = useState<any[]>([])
-  const [donationBreakdown, setDonationBreakdown] = useState<any[]>([])
   const [stats, setStats] = useState({
     totalMembers: 0,
     totalEvents: 0,
-    totalDonated: 0,
     avgAttendance: 0,
     guestConversion: 0,
   })
@@ -102,25 +95,6 @@ export default function AnalyticsPage() {
         setMemberGrowth(Object.entries(monthly).map(([month, count]) => ({ month, 会員数: count })))
       }
 
-      // Donations breakdown
-      const { data: donations } = await supabase.from('donations').select('*')
-      if (donations) {
-        type D = { edeli_amount: number; befrienders_amount: number; hitoribocchi_amount: number; total_amount: number }
-        const totalEdeli = donations.reduce((s: number, d: D) => s + d.edeli_amount, 0)
-        const totalBefrienders = donations.reduce((s: number, d: D) => s + d.befrienders_amount, 0)
-        const totalHitoribocchi = donations.reduce((s: number, d: D) => s + d.hitoribocchi_amount, 0)
-        setDonationBreakdown([
-          { name: 'イーデリ', value: totalEdeli },
-          { name: '国際ビフレンダーズ', value: totalBefrienders },
-          { name: 'ひとりぼっちPJ', value: totalHitoribocchi },
-        ])
-
-        setStats(prev => ({
-          ...prev,
-          totalDonated: donations.reduce((s: number, d: D) => s + d.total_amount, 0),
-        }))
-      }
-
       // Overall stats
       const { count: memberCount } = await supabase
         .from('users')
@@ -166,7 +140,7 @@ export default function AnalyticsPage() {
       <h1 className="text-2xl font-bold">統計・分析</h1>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card className="text-center">
           <p className="text-xs text-text-muted mb-1">総会員数</p>
           <p className="text-2xl font-bold">{stats.totalMembers}</p>
@@ -174,10 +148,6 @@ export default function AnalyticsPage() {
         <Card className="text-center">
           <p className="text-xs text-text-muted mb-1">イベント数</p>
           <p className="text-2xl font-bold">{stats.totalEvents}</p>
-        </Card>
-        <Card className="text-center">
-          <p className="text-xs text-text-muted mb-1">累計寄付額</p>
-          <p className="text-2xl font-bold text-primary">{formatCurrency(stats.totalDonated)}</p>
         </Card>
         <Card className="text-center">
           <p className="text-xs text-text-muted mb-1">ゲスト→会員転換率</p>
@@ -235,30 +205,6 @@ export default function AnalyticsPage() {
                 <Cell fill="#F97316" />
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
-        </Card>
-
-        {/* Donation Distribution */}
-        <Card>
-          <h3 className="font-bold mb-4">寄付金配分</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={donationBreakdown}
-                cx="50%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={100}
-                paddingAngle={5}
-                dataKey="value"
-                label={({ name, value }) => `${name}: ${formatCurrency(value)}`}
-              >
-                {donationBreakdown.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-            </PieChart>
           </ResponsiveContainer>
         </Card>
       </div>

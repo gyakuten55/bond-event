@@ -75,16 +75,6 @@ export const newsSchema = z.object({
   isPublished: z.boolean(),
 })
 
-export const donationSchema = z.object({
-  eventId: z.string().optional(),
-  totalAmount: z.number().min(0),
-  edeliAmount: z.number().min(0),
-  befriendersAmount: z.number().min(0),
-  hitoribocchiAmount: z.number().min(0),
-  note: z.string().optional(),
-  donatedAt: z.string().min(1, '寄付日を入力してください'),
-})
-
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 export type ProfileInput = z.infer<typeof profileSchema>
@@ -94,4 +84,3 @@ export type ContactInput = z.infer<typeof contactSchema>
 export type EventInput = z.infer<typeof eventSchema>
 export type AnnouncementInput = z.infer<typeof announcementSchema>
 export type NewsInput = z.infer<typeof newsSchema>
-export type DonationInput = z.infer<typeof donationSchema>

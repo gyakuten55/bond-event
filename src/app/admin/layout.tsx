@@ -10,7 +10,6 @@ import {
   Megaphone,
   Newspaper,
   Mail,
-  Heart,
   BarChart3,
   LogOut,
 } from 'lucide-react'
@@ -22,7 +21,6 @@ const sidebarItems = [
   { href: '/admin/announcements', label: 'ビジネス告知', icon: Megaphone },
   { href: '/admin/news', label: 'ニュース管理', icon: Newspaper },
   { href: '/admin/contacts', label: 'お問い合わせ', icon: Mail },
-  { href: '/admin/donations', label: '寄付金管理', icon: Heart },
   { href: '/admin/analytics', label: '統計・分析', icon: BarChart3 },
 ]
 
