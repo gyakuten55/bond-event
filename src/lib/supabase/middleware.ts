@@ -6,22 +6,7 @@ export async function updateSession(request: NextRequest) {
   const supabaseResponse = NextResponse.next({ request })
   const pathname = request.nextUrl.pathname
 
-  // Demo mode: check demo_role cookie
-  const demoRole = request.cookies.get('demo_role')?.value
-  if (demoRole) {
-    // Demo admin can access /admin
-    if (pathname.startsWith('/admin') && demoRole !== 'admin') {
-      const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
-    }
-    // Demo users can access protected routes
-    return supabaseResponse
-  }
-
-  // Skip auth checks if Supabase is not configured
   if (!isSupabaseConfigured()) {
-    // Block protected routes when not logged in and no demo
     if (pathname.startsWith('/dashboard') || pathname.startsWith('/admin')) {
       const url = request.nextUrl.clone()
       url.pathname = '/auth/login'

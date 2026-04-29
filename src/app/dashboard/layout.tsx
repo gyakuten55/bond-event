@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { LayoutDashboard, Calendar, User, Megaphone, LogOut } from 'lucide-react'
 
 const sidebarItems = [
@@ -14,9 +15,11 @@ const sidebarItems = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
-  const handleLogout = () => {
-    document.cookie = 'demo_role=; path=/; max-age=0'
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
     router.push('/')
+    router.refresh()
   }
 
   return (
